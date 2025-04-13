@@ -59,12 +59,21 @@ export default {
 					bronze: '#CD7F32',
 				},
 				brand: {
-					purple: '#5E17EB',
-					lightPurple: '#8C52FF',
-					darkPurple: '#4A0DB3',
-					blue: '#3498db',
-					darkBlue: '#2980b9',
+					purple: '#8B5CF6',
+					lightPurple: '#A78BFA',
+					darkPurple: '#7C3AED',
+					blue: '#3B82F6',
+					darkBlue: '#2563EB',
+					orange: '#F97316',
+					green: '#10B981',
 				},
+				game: {
+					xp: '#F59E0B',
+					level: '#6366F1',
+					badge: '#EC4899',
+					streak: '#EF4444',
+					quest: '#8B5CF6',
+				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -88,12 +97,27 @@ export default {
 					'0%': { transform: 'scale(0.95)', opacity: '0' },
 					'100%': { transform: 'scale(1)', opacity: '1' }
 				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' }
+				},
+				'bounce-small': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-3px)' }
+				},
+				'glow': {
+					'0%, 100%': { boxShadow: '0 0 5px rgba(139, 92, 246, 0.5)' },
+					'50%': { boxShadow: '0 0 20px rgba(139, 92, 246, 0.8)' }
+				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'pulse-gentle': 'pulse-gentle 2s infinite ease-in-out',
 				'scale-in': 'scale-in 0.2s ease-out',
+				'float': 'float 3s ease-in-out infinite',
+				'bounce-small': 'bounce-small 2s infinite',
+				'glow': 'glow 2s infinite ease-in-out',
 			},
 			fontFamily: {
 				montserrat: ['Montserrat', 'sans-serif'],

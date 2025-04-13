@@ -16,11 +16,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 255 25% 15%;
 
-    --primary: 259 84% 51%;
+    --primary: 262 83% 58%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 241 100% 95%;
-    --secondary-foreground: 259 84% 51%;
+    --secondary: 252 100% 97%;
+    --secondary-foreground: 262 83% 58%;
 
     --muted: 240 10% 90%;
     --muted-foreground: 240 5% 40%;
@@ -33,7 +33,7 @@
 
     --border: 245 20% 90%;
     --input: 245 20% 90%;
-    --ring: 259 84% 51%;
+    --ring: 262 83% 58%;
 
     --radius: 0.75rem;
   }
@@ -48,7 +48,7 @@
     --popover: 255 25% 15%;
     --popover-foreground: 250 33% 97%;
 
-    --primary: 259 84% 51%;
+    --primary: 262 83% 58%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 25% 20%;
@@ -65,7 +65,7 @@
 
     --border: 240 20% 20%;
     --input: 240 20% 20%;
-    --ring: 259 84% 51%;
+    --ring: 262 83% 58%;
   }
 }
 
@@ -97,4 +97,64 @@
   .btn-secondary {
     @apply bg-secondary text-primary hover:bg-muted transition-colors duration-200;
   }
+  
+  /* Gamification Elements */
+  .xp-badge {
+    @apply bg-gradient-to-r from-game-xp to-orange-400 text-white px-2 py-1 rounded-full text-xs font-bold shadow-md;
+  }
+  
+  .level-badge {
+    @apply bg-gradient-to-r from-game-level to-indigo-400 text-white px-2 py-1 rounded-full text-xs font-bold shadow-md animate-pulse-gentle;
+  }
+  
+  .streak-badge {
+    @apply bg-gradient-to-r from-game-streak to-red-400 text-white px-2 py-1 rounded-full text-xs font-bold shadow-md;
+  }
+  
+  .quest-card {
+    @apply border border-brand-purple/20 bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:border-brand-purple;
+  }
+  
+  .progress-bar {
+    @apply h-2 rounded-full bg-gray-200 overflow-hidden;
+  }
+  
+  .progress-value {
+    @apply h-full bg-gradient-to-r from-brand-purple to-brand-blue rounded-full transition-all duration-500;
+  }
+  
+  .game-card {
+    @apply bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300;
+  }
+  
+  .reward-item {
+    @apply flex items-center gap-2 p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors;
+  }
+  
+  .glow-effect {
+    @apply animate-glow;
+  }
+  
+  .float-animation {
+    @apply animate-float;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #8B5CF6;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #7C3AED;
 }
