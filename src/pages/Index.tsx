@@ -17,7 +17,14 @@ import { toast } from 'sonner';
 const Index = () => {
   const [feedTab, setFeedTab] = useState('all');
   const { user } = useAuth();
-  const currentUser = user || users[0]; // Fallback to mock data if needed
+  
+  // Use the first mock user as a fallback with proper type handling
+  const currentUser = user || {
+    ...users[0],
+    level: 12,
+    xp: 1250,
+    streak: 7
+  };
 
   const handleAddAchievement = () => {
     toast("Coming soon!", {
