@@ -19,15 +19,8 @@ import PeopleYouMayKnow from '@/components/dashboard/PeopleYouMayKnow';
 
 const Index = () => {
   const { user } = useAuth();
-  // Ensure the currentUser has all required properties, fallback to users[0] if needed
-  const currentUser = user || {
-    ...users[0], 
-    // Add any potentially missing properties from auth User to match required User type
-    email: user?.email || users[0].email,
-    level: user?.level || users[0].level,
-    xp: user?.xp || users[0].xp,
-    streak: user?.streak || users[0].streak
-  };
+  // Use the first mock user as fallback if no authenticated user
+  const currentUser = user || users[0];
 
   return (
     <div className="min-h-screen bg-gray-50">
