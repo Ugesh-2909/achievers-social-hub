@@ -1,9 +1,10 @@
 
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth, User as AuthUser } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
 import ProfileCard from '@/components/ProfileCard';
 import Footer from '@/components/Footer';
 import { users, achievements, feedItems, leaderboardItems } from '@/data/mockData';
+import { User as MockUser } from '@/data/mockData';
 
 // Import refactored components
 import WelcomeSection from '@/components/dashboard/WelcomeSection';
@@ -19,8 +20,19 @@ import PeopleYouMayKnow from '@/components/dashboard/PeopleYouMayKnow';
 
 const Index = () => {
   const { user } = useAuth();
-  // Use the first mock user as fallback if no authenticated user
-  const currentUser = user || users[0];
+  
+  // Create a compatible user object that has all required properties from both types
+  const currentUser: AuthUser = user || {
+    id: users[0].id,
+    name: users[0].name,
+    email: 'mock@example.com', // Add required AuthUser properties
+    avatar: users[0].avatar,
+    level: 1,
+    xp: 0,
+    streak: 0,
+    university: users[0].university,
+    major: users[0].major
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
