@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
@@ -18,13 +17,15 @@ const Index = () => {
   const [feedTab, setFeedTab] = useState('all');
   const { user } = useAuth();
   
-  // Use the first mock user as a fallback with proper type handling
-  const currentUser = user || {
-    ...users[0],
-    level: 12,
-    xp: 1250,
-    streak: 7
-  };
+  // Create a properly merged user object that satisfies both user types
+  const currentUser = user ? {
+    ...users[0], // Provide default values for properties from mock data
+    ...user,     // Override with actual user data where available
+    // Ensure these gameification properties exist
+    level: user.level || 12,
+    xp: user.xp || 1250,
+    streak: user.streak || 7
+  } : users[0];
 
   const handleAddAchievement = () => {
     toast("Coming soon!", {

@@ -5,8 +5,21 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { User } from "@/data/mockData";
 
+// Updated interface to make properties that aren't available in AuthContext User optional
 interface ProfileCardProps {
-  user: User;
+  user: {
+    id: string;
+    name: string;
+    avatar: string;
+    username?: string;
+    university: string;
+    major: string;
+    year?: string;
+    bio?: string;
+    connectionsCount?: number;
+    achievementsCount?: number;
+    rank?: number;
+  };
   isCurrentUser?: boolean;
 }
 
@@ -25,7 +38,7 @@ const ProfileCard = ({ user, isCurrentUser = false }: ProfileCardProps) => {
         <div className="ml-28 flex items-start justify-between">
           <div>
             <h3 className="text-xl font-bold">{user.name}</h3>
-            <p className="text-sm text-muted-foreground">@{user.username}</p>
+            <p className="text-sm text-muted-foreground">@{user.username || 'username'}</p>
           </div>
           {isCurrentUser ? (
             <Button size="sm" variant="outline">Edit Profile</Button>
@@ -36,7 +49,7 @@ const ProfileCard = ({ user, isCurrentUser = false }: ProfileCardProps) => {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-3">
-          <p className="text-sm leading-relaxed">{user.bio}</p>
+          <p className="text-sm leading-relaxed">{user.bio || 'No bio available'}</p>
           
           <div className="flex flex-wrap gap-2">
             <div className="flex items-center gap-1 text-sm">
@@ -47,31 +60,39 @@ const ProfileCard = ({ user, isCurrentUser = false }: ProfileCardProps) => {
               <BookOpen size={16} className="text-muted-foreground" />
               <span>{user.major}</span>
             </div>
-            <div className="flex items-center gap-1 text-sm">
-              <Calendar size={16} className="text-muted-foreground" />
-              <span>{user.year}</span>
-            </div>
+            {user.year && (
+              <div className="flex items-center gap-1 text-sm">
+                <Calendar size={16} className="text-muted-foreground" />
+                <span>{user.year}</span>
+              </div>
+            )}
           </div>
           
           <div className="flex flex-wrap gap-4 pt-2">
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="flex items-center gap-1">
-                <Award size={14} />
-                <span>{user.achievementsCount} Achievements</span>
-              </Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="flex items-center gap-1">
-                <Users size={14} />
-                <span>{user.connectionsCount} Connections</span>
-              </Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="flex items-center gap-1">
-                <Star size={14} />
-                <span>#{user.rank} Rank</span>
-              </Badge>
-            </div>
+            {user.achievementsCount !== undefined && (
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <Award size={14} />
+                  <span>{user.achievementsCount} Achievements</span>
+                </Badge>
+              </div>
+            )}
+            {user.connectionsCount !== undefined && (
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <Users size={14} />
+                  <span>{user.connectionsCount} Connections</span>
+                </Badge>
+              </div>
+            )}
+            {user.rank !== undefined && (
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <Star size={14} />
+                  <span>#{user.rank} Rank</span>
+                </Badge>
+              </div>
+            )}
           </div>
           
           <div className="flex flex-wrap gap-2 pt-2">
