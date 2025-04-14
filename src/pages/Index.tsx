@@ -17,8 +17,6 @@ const Index = () => {
   const [feedTab, setFeedTab] = useState('all');
   const { user } = useAuth();
   
-  // Create a properly merged user object with both auth context and mock data properties
-  // Force type assertion since we've ensured these properties exist on User type
   const currentUser = user || users[0];
 
   const handleAddAchievement = () => {
@@ -42,7 +40,6 @@ const Index = () => {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Section */}
         <section className="mb-10 text-center">
           <h1 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-brand-purple to-brand-blue">Welcome to UpRIT</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -51,11 +48,9 @@ const Index = () => {
         </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Sidebar */}
           <div className="lg:col-span-3 space-y-6">
             <ProfileCard user={currentUser} isCurrentUser={true} />
 
-            {/* Gamification Stats */}
             <Card className="overflow-hidden border-brand-purple/20 animate-fade-in">
               <div className="bg-gradient-to-r from-brand-purple to-brand-blue px-4 py-3">
                 <h3 className="font-semibold text-white">Your Progress</h3>
@@ -121,7 +116,6 @@ const Index = () => {
             </Card>
           </div>
 
-          {/* Main Content */}
           <div className="lg:col-span-6 space-y-6">
             <Card className="bg-white border-brand-purple/20">
               <div className="bg-gradient-to-r from-game-quest to-purple-400 px-4 py-3">
@@ -226,7 +220,6 @@ const Index = () => {
             </Tabs>
           </div>
 
-          {/* Right Sidebar */}
           <div className="lg:col-span-3 space-y-6">
             <LeaderboardCard items={leaderboardItems} category="Overall" limit={5} />
             
