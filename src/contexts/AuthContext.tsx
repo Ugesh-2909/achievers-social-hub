@@ -1,4 +1,3 @@
-
 import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 
 interface User {
@@ -11,6 +10,12 @@ interface User {
   streak: number;
   university: string;
   major: string;
+  username?: string;
+  year?: string;
+  bio?: string;
+  connectionsCount?: number;
+  achievementsCount?: number;
+  rank?: number;
 }
 
 interface AuthContextType {
@@ -42,7 +47,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Check for existing session
     const savedUser = localStorage.getItem('uprit_user');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
@@ -50,11 +54,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setIsLoading(false);
   }, []);
 
-  // In a real app, these would connect to a backend
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Mock login - in real app, this would be an API call
       if (email === 'demo@uprit.edu' && password === 'password') {
         const mockUser: User = {
           id: '1',
@@ -84,7 +86,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signup = async (name: string, email: string, password: string, university: string) => {
     setIsLoading(true);
     try {
-      // Mock signup - in real app, this would be an API call
       const mockUser: User = {
         id: Math.random().toString(36).substring(2, 9),
         name,

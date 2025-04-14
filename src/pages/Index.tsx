@@ -17,14 +17,10 @@ const Index = () => {
   const [feedTab, setFeedTab] = useState('all');
   const { user } = useAuth();
   
-  // Create a properly merged user object that satisfies both user types
+  // Create a properly merged user object with both auth context and mock data properties
   const currentUser = user ? {
-    ...users[0], // Provide default values for properties from mock data
+    ...users[0], // Provide default values from mock data
     ...user,     // Override with actual user data where available
-    // Ensure these gameification properties exist
-    level: user.level || 12,
-    xp: user.xp || 1250,
-    streak: user.streak || 7
   } : users[0];
 
   const handleAddAchievement = () => {

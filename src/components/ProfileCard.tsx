@@ -3,7 +3,6 @@ import { User as UserIcon, Users, Award, Star, MapPin, BookOpen, Calendar } from
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User } from "@/data/mockData";
 
 // Updated interface to make properties that aren't available in AuthContext User optional
 interface ProfileCardProps {
@@ -19,6 +18,9 @@ interface ProfileCardProps {
     connectionsCount?: number;
     achievementsCount?: number;
     rank?: number;
+    level?: number;
+    xp?: number;
+    streak?: number;
   };
   isCurrentUser?: boolean;
 }
