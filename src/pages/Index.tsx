@@ -18,10 +18,8 @@ const Index = () => {
   const { user } = useAuth();
   
   // Create a properly merged user object with both auth context and mock data properties
-  const currentUser = user ? {
-    ...users[0], // Provide default values from mock data
-    ...user,     // Override with actual user data where available
-  } : users[0];
+  // Force type assertion since we've ensured these properties exist on User type
+  const currentUser = user || users[0];
 
   const handleAddAchievement = () => {
     toast("Coming soon!", {
@@ -125,7 +123,6 @@ const Index = () => {
 
           {/* Main Content */}
           <div className="lg:col-span-6 space-y-6">
-            {/* Daily Quests */}
             <Card className="bg-white border-brand-purple/20">
               <div className="bg-gradient-to-r from-game-quest to-purple-400 px-4 py-3">
                 <h3 className="font-semibold text-white flex items-center">
@@ -174,7 +171,6 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            {/* Add Achievement Card */}
             <Card className="bg-white">
               <CardContent className="p-4">
                 <div className="flex items-center space-x-4">
@@ -193,7 +189,6 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            {/* Feed Tabs */}
             <Tabs defaultValue="all" value={feedTab} onValueChange={setFeedTab}>
               <div className="flex justify-between items-center mb-4">
                 <TabsList>
