@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/Auth";
 import { RequireAuth } from "./components/auth/RequireAuth";
 import AchievementsPage from "./pages/Achievements";
+import LeaderboardPage from "./pages/Leaderboard"; // Import the new page
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ function App() {
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
               <Route path="/achievements" element={<RequireAuth><AchievementsPage /></RequireAuth>} />
+              <Route path="/leaderboard" element={<RequireAuth><LeaderboardPage /></RequireAuth>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

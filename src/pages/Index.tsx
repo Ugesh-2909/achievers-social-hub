@@ -22,7 +22,7 @@ const Index = () => {
   const { user } = useAuth();
   
   // Create a compatible user object that has all required properties from both types
-  const currentUser: AuthUser = user || {
+  const currentUser = user || {
     id: users[0].id,
     name: users[0].name,
     email: 'mock@example.com', // Add required AuthUser properties
@@ -32,7 +32,7 @@ const Index = () => {
     streak: 0,
     university: users[0].university,
     major: users[0].major
-  };
+  } as AuthUser;
 
   return (
     <div className="min-h-screen bg-gray-50">
