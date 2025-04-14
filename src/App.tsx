@@ -10,13 +10,13 @@ import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/Auth";
 import { RequireAuth } from "./components/auth/RequireAuth";
 import AchievementsPage from "./pages/Achievements";
-import LeaderboardPage from "./pages/Leaderboard"; // Import the new page
-
-// Create a new QueryClient instance
-const queryClient = new QueryClient();
+import LeaderboardPage from "./pages/Leaderboard";
 
 // Define App as a proper function component
 function App() {
+  // Create QueryClient instance inside the component
+  const queryClient = new QueryClient();
+  
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
