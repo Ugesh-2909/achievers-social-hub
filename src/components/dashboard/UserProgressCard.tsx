@@ -1,52 +1,52 @@
 
+import { User } from '@/contexts/AuthContext';
 import { Card, CardContent } from "@/components/ui/card";
-import { User } from "@/data/mockData";
+import { Progress } from "@/components/ui/progress";
+import { User as LucideUser, Trophy } from "lucide-react";
 
 interface UserProgressCardProps {
-  user: User | {
-    level: number;
-    xp: number;
-    streak: number;
-  };
+  user: User;
+}
+
+interface ExtendedUser extends User {
+  level?: number;
+  xp?: number;
+  streak?: number;
 }
 
 const UserProgressCard = ({ user }: UserProgressCardProps) => {
+  // Default values if properties don't exist
+  const extendedUser = user as ExtendedUser;
+  const level = extendedUser.level || 1;
+  const xp = extendedUser.xp || 0;
+  const nextLevelXp = level * 1000;
+  const xpProgress = Math.min((xp / nextLevelXp) * 100, 100);
+  const streak = extendedUser.streak || 0;
+
   return (
-    <Card className="overflow-hidden border-brand-purple/20 animate-fade-in">
+    <Card className="overflow-hidden border-brand-purple/20">
       <div className="bg-gradient-to-r from-brand-purple to-brand-blue px-4 py-3">
-        <h3 className="font-semibold text-white">Your Progress</h3>
+        <h3 className="font-semibold text-white flex items-center">
+          <LucideUser className="h-5 w-5 mr-2" />
+          My Progress
+        </h3>
       </div>
       <CardContent className="p-4">
         <div className="space-y-4">
           <div>
-            <div className="flex justify-between mb-2">
-              <span className="text-sm font-medium">Level {user.level}</span>
-              <span className="text-sm text-muted-foreground">{user.xp}/2000 XP</span>
+            <div className="flex justify-between mb-1">
+              <span className="text-sm font-medium">Level {level}</span>
+              <span className="text-sm text-muted-foreground">{xp}/{nextLevelXp} XP</span>
             </div>
-            <div className="progress-bar">
-              <div className="progress-value" style={{ width: `${Math.min((user.xp / 2000) * 100, 100)}%` }}></div>
-            </div>
+            <Progress value={xpProgress} className="h-2" />
           </div>
           
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Daily Streak</span>
-            <div className="streak-badge">
-              {user.streak} days
+          <div className="flex items-center justify-between">
+            <span className="text-sm">Daily Streak</span>
+            <div className="flex items-center">
+              <Trophy className="h-4 w-4 mr-1 text-yellow-500" />
+              <span className="font-bold">{streak} days</span>
             </div>
-          </div>
-          
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Achievements</span>
-            <span className="bg-secondary rounded-full px-2 py-0.5 text-xs font-semibold">
-              12/50
-            </span>
-          </div>
-          
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Quests Complete</span>
-            <span className="bg-secondary rounded-full px-2 py-0.5 text-xs font-semibold">
-              8/20
-            </span>
           </div>
         </div>
       </CardContent>

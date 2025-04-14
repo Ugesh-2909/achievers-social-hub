@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/Auth";
 import { RequireAuth } from "./components/auth/RequireAuth";
+import AchievementsPage from "./pages/Achievements";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ function App() {
             <Routes>
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
+              <Route path="/achievements" element={<RequireAuth><AchievementsPage /></RequireAuth>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
