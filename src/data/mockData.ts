@@ -18,18 +18,27 @@ export interface User {
 
 export interface Achievement {
   id: string;
+  userId: string;
   title: string;
   description: string;
   image: string;
   points: number;
   category: string;
+  badge?: "gold" | "silver" | "bronze";
+  date: string;
+  likes: number;
+  comments: number;
 }
 
 export interface FeedItem {
   id: string;
   userId: string;
-  type: 'achievement' | 'connection' | 'event';
+  type: 'achievement' | 'connection' | 'milestone' | 'event';
   content: string;
+  date: string;
+  likes: number;
+  comments: number;
+  achievementId?: string;
   timestamp: string;
 }
 
@@ -311,83 +320,128 @@ export const users: User[] = [
 export const achievements: Achievement[] = [
   {
     id: "1",
+    userId: "1",
     title: "First Connection",
     description: "Made your first connection on the platform.",
     image: "/images/achievements/connection.svg",
     points: 50,
-    category: "Networking"
+    category: "academic",
+    date: "2023-12-01",
+    likes: 12,
+    comments: 3
   },
   {
     id: "2",
+    userId: "2",
     title: "Rising Star",
     description: "Achieved a level 5 profile.",
     image: "/images/achievements/rising-star.svg",
     points: 100,
-    category: "Profile"
+    category: "extracurricular",
+    badge: "bronze",
+    date: "2024-01-15",
+    likes: 24,
+    comments: 5
   },
   {
     id: "3",
+    userId: "3",
     title: "Social Butterfly",
     description: "Connected with 20 users.",
     image: "/images/achievements/social-butterfly.svg",
     points: 150,
-    category: "Networking"
+    category: "professional",
+    date: "2024-02-05",
+    likes: 18,
+    comments: 7
   },
   {
     id: "4",
+    userId: "1",
     title: "Academic Excellence",
     description: "Completed a course with honors.",
     image: "/images/achievements/academic-excellence.svg",
     points: 200,
-    category: "Academics"
+    category: "academic",
+    badge: "silver",
+    date: "2024-02-20",
+    likes: 32,
+    comments: 9
   },
   {
     id: "5",
+    userId: "2",
     title: "Innovation Award",
     description: "Won an innovation challenge.",
     image: "/images/achievements/innovation-award.svg",
     points: 250,
-    category: "Achievements"
+    category: "award",
+    badge: "gold",
+    date: "2024-03-01",
+    likes: 45,
+    comments: 11
   },
   {
     id: "6",
+    userId: "4",
     title: "Perfect Attendance",
     description: "Maintained perfect attendance for a semester.",
     image: "/images/achievements/perfect-attendance.svg",
     points: 120,
-    category: "Academics"
+    category: "academic",
+    date: "2024-01-30",
+    likes: 14,
+    comments: 4
   },
   {
     id: "7",
+    userId: "5",
     title: "Community Hero",
     description: "Volunteered for 50 hours in community service.",
     image: "/images/achievements/community-hero.svg",
     points: 180,
-    category: "Community"
+    category: "volunteer",
+    date: "2024-02-12",
+    likes: 29,
+    comments: 8
   },
   {
     id: "8",
+    userId: "6",
     title: "Tech Whiz",
     description: "Developed a successful software application.",
     image: "/images/achievements/tech-whiz.svg",
     points: 220,
-    category: "Achievements"
+    category: "professional",
+    badge: "bronze",
+    date: "2024-01-25",
+    likes: 27,
+    comments: 6
   },
   {
     id: "9",
+    userId: "7",
     title: "Global Citizen",
     description: "Participated in an international exchange program.",
     image: "/images/achievements/global-citizen.svg",
     points: 280,
-    category: "Community"
+    category: "volunteer",
+    date: "2024-02-28",
+    likes: 21,
+    comments: 5
   },
   {
     id: "10",
+    userId: "8",
     title: "Leadership Role",
     description: "Served as a leader in a student organization.",
     image: "/images/achievements/leadership-role.svg",
     points: 300,
-    category: "Leadership"
+    category: "professional",
+    badge: "silver",
+    date: "2024-03-05",
+    likes: 38,
+    comments: 10
   },
 ];
 
@@ -397,6 +451,10 @@ export const feedItems: FeedItem[] = [
     userId: "1",
     type: "achievement",
     content: "Alex Johnson earned the 'First Connection' achievement.",
+    achievementId: "1",
+    date: "2024-03-10",
+    likes: 15,
+    comments: 3,
     timestamp: "2024-03-10T14:30:00Z"
   },
   {
@@ -404,6 +462,9 @@ export const feedItems: FeedItem[] = [
     userId: "2",
     type: "connection",
     content: "Jordan Smith connected with Casey Williams.",
+    date: "2024-03-09",
+    likes: 8,
+    comments: 1,
     timestamp: "2024-03-09T20:00:00Z"
   },
   {
@@ -411,6 +472,9 @@ export const feedItems: FeedItem[] = [
     userId: "3",
     type: "event",
     content: "Casey Williams is attending the 'AI Innovation Summit'.",
+    date: "2024-03-08",
+    likes: 12,
+    comments: 4,
     timestamp: "2024-03-08T10:00:00Z"
   },
   {
@@ -418,6 +482,10 @@ export const feedItems: FeedItem[] = [
     userId: "4",
     type: "achievement",
     content: "Riley Brown achieved a level 5 profile and earned the 'Rising Star' achievement.",
+    achievementId: "2",
+    date: "2024-03-07",
+    likes: 24,
+    comments: 7,
     timestamp: "2024-03-07T18:45:00Z"
   },
   {
@@ -425,13 +493,20 @@ export const feedItems: FeedItem[] = [
     userId: "5",
     type: "connection",
     content: "Taylor Davis connected with 10 new users this week.",
+    date: "2024-03-06",
+    likes: 9,
+    comments: 2,
     timestamp: "2024-03-06T12:00:00Z"
   },
   {
     id: "6",
     userId: "6",
-    type: "achievement",
+    type: "milestone",
     content: "Morgan Wilson earned the 'Social Butterfly' achievement for connecting with 20 users.",
+    achievementId: "3",
+    date: "2024-03-05",
+    likes: 18,
+    comments: 5,
     timestamp: "2024-03-05T09:15:00Z"
   },
   {
@@ -439,13 +514,20 @@ export const feedItems: FeedItem[] = [
     userId: "7",
     type: "event",
     content: "Jamie Garcia is speaking at the 'Future of Aerospace' conference.",
+    date: "2024-03-04",
+    likes: 14,
+    comments: 3,
     timestamp: "2024-03-04T16:30:00Z"
   },
   {
     id: "8",
     userId: "8",
-    type: "achievement",
+    type: "milestone",
     content: "Avery Rodriguez completed a course with honors and earned the 'Academic Excellence' achievement.",
+    achievementId: "4",
+    date: "2024-03-03",
+    likes: 32,
+    comments: 8,
     timestamp: "2024-03-03T22:00:00Z"
   },
   {
@@ -453,6 +535,9 @@ export const feedItems: FeedItem[] = [
     userId: "9",
     type: "connection",
     content: "Cameron Martinez expanded their network by connecting with industry professionals.",
+    date: "2024-03-02",
+    likes: 7,
+    comments: 1,
     timestamp: "2024-03-02T14:00:00Z"
   },
   {
@@ -460,6 +545,10 @@ export const feedItems: FeedItem[] = [
     userId: "10",
     type: "achievement",
     content: "Jordan Garcia won an innovation challenge and earned the 'Innovation Award' achievement.",
+    achievementId: "5",
+    date: "2024-03-01",
+    likes: 27,
+    comments: 9,
     timestamp: "2024-03-01T08:00:00Z"
   },
 ];
