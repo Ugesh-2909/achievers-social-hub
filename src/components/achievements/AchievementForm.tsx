@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -8,9 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Achievement, achievements } from "@/data/mockData";
+import { Achievement } from "@/data/mockData";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const achievementSchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }),
@@ -36,33 +36,52 @@ const AchievementForm = ({ onSuccess, onCancel }: AchievementFormProps) => {
     },
   });
 
-  const onSubmit = (data: AchievementFormData) => {
+  const onSubmit = async (data: AchievementFormData) => {
     if (!user) {
       toast.error("You must be logged in to post an achievement");
       return;
     }
 
-    // Create a new achievement
-    const newAchievement: Achievement = {
-      id: `${achievements.length + 1}`,
-      userId: user.id,
-      title: data.title,
-      description: data.description,
-      category: data.category,
-      image: `/images/achievements/${data.category}.svg`, // Use a default image based on category
-      points: 100, // Default points
-      date: new Date().toISOString().split('T')[0],
-      likes: 0,
-      comments: 0,
-    };
+    try {
+      // Create a new achievement in Supabase
+      const { error } = await supabase.from('achievements').insert({
+        user_id: user.id,
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        image: `/images/achievements/${data.category}.svg`, // Use a default image based on category
+        points: 100, // Default points
+      });
 
-    // In a real app, this would be an API call to save the achievement
-    achievements.push(newAchievement);
+      if (error) {
+        console.error("Error posting achievement:", error);
+        toast.error("Failed to post achievement");
+        return;
+      }
 
-    toast.success("Achievement posted successfully!");
-    
-    if (onSuccess) {
-      onSuccess();
+      // Still keep the local mock data updated for compatibility
+      const newAchievement: Achievement = {
+        id: Math.random().toString(36).substring(2, 9),
+        userId: user.id,
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        image: `/images/achievements/${data.category}.svg`,
+        points: 100,
+        date: new Date().toISOString().split('T')[0],
+        likes: 0,
+        comments: 0,
+      };
+
+      // In a real app, this would be an API call to save the achievement
+      toast.success("Achievement posted successfully!");
+      
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      console.error("Error posting achievement:", error);
+      toast.error("Something went wrong");
     }
   };
 

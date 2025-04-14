@@ -1,5 +1,6 @@
-
 import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
 // Export the User interface so it can be imported by other components
 export interface User {
@@ -22,11 +23,12 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string, university: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   updateUser: (userData: Partial<User>) => void;
 }
 
@@ -46,19 +48,110 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  
+  // Function to get user profile data from Supabase
+  const getUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+        
+      if (error) {
+        console.error("Error fetching user profile:", error);
+        return null;
+      }
+      
+      return data;
+    } catch (error) {
+      console.error("Error in getUserProfile:", error);
+      return null;
+    }
+  };
+  
+  // Function to convert Supabase user to our app's User type
+  const mapSupabaseUser = async (supaUser: SupabaseUser, currentSession: Session | null): Promise<User> => {
+    // Get additional profile data
+    const profile = await getUserProfile(supaUser.id);
+    
+    // Calculate user stats (could be fetched from a separate table in a real app)
+    const { data: achievements } = await supabase
+      .from('achievements')
+      .select('id, points')
+      .eq('user_id', supaUser.id);
+      
+    const totalAchievements = achievements?.length || 0;
+    const totalPoints = achievements?.reduce((sum, a) => sum + (a.points || 0), 0) || 0;
+    
+    // Level calculation (simplified)
+    const level = Math.max(1, Math.floor(totalPoints / 1000) + 1);
+    
+    return {
+      id: supaUser.id,
+      name: profile?.username || supaUser.email?.split('@')[0] || 'User',
+      email: supaUser.email || '',
+      avatar: profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.username || 'User')}`,
+      level,
+      xp: totalPoints,
+      streak: 0, // This could be calculated from a separate table
+      university: profile?.university || 'Not specified',
+      major: profile?.major || 'Not specified',
+      username: profile?.username,
+      year: profile?.year,
+      bio: profile?.bio,
+      achievementsCount: totalAchievements,
+    };
+  };
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('uprit_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setIsLoading(false);
+    const initializeAuth = async () => {
+      try {
+        setIsLoading(true);
+        
+        // First set up the auth listener
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          async (_event, newSession) => {
+            setSession(newSession);
+            
+            if (newSession?.user) {
+              const mappedUser = await mapSupabaseUser(newSession.user, newSession);
+              setUser(mappedUser);
+            } else {
+              setUser(null);
+            }
+          }
+        );
+
+        // Then check for existing session
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        setSession(currentSession);
+        
+        if (currentSession?.user) {
+          const mappedUser = await mapSupabaseUser(currentSession.user, currentSession);
+          setUser(mappedUser);
+        }
+        
+        setIsLoading(false);
+        
+        return () => {
+          subscription.unsubscribe();
+        };
+      } catch (error) {
+        console.error("Error initializing auth:", error);
+        setIsLoading(false);
+      }
+    };
+    
+    initializeAuth();
   }, []);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
+      // For demo purposes keep the mock login logic
       if (email === 'demo@uprit.edu' && password === 'password') {
         const mockUser: User = {
           id: '1',
@@ -76,8 +169,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         localStorage.setItem('uprit_user', JSON.stringify(mockUser));
         return;
       }
-      throw new Error('Invalid credentials');
-    } catch (error) {
+      
+      // Real Supabase login
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      if (error) throw error;
+
+    } catch (error: any) {
       console.error('Login failed:', error);
       throw error;
     } finally {
@@ -88,21 +189,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signup = async (name: string, email: string, password: string, university: string) => {
     setIsLoading(true);
     try {
-      const mockUser: User = {
-        id: Math.random().toString(36).substring(2, 9),
-        name,
+      // Sign up with Supabase
+      const { error } = await supabase.auth.signUp({
         email,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
-        level: 1,
-        xp: 0,
-        streak: 0,
-        university,
-        major: 'Not specified'
-      };
+        password,
+        options: {
+          data: {
+            name,
+            university,
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`
+          }
+        }
+      });
       
-      setUser(mockUser);
-      localStorage.setItem('uprit_user', JSON.stringify(mockUser));
-    } catch (error) {
+      if (error) throw error;
+
+      // Note: Profile creation is handled by the database trigger we set up
+      
+    } catch (error: any) {
       console.error('Signup failed:', error);
       throw error;
     } finally {
@@ -110,16 +214,50 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('uprit_user');
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setSession(null);
+      localStorage.removeItem('uprit_user');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
-  const updateUser = (userData: Partial<User>) => {
-    if (user) {
+  const updateUser = async (userData: Partial<User>) => {
+    if (!user) return;
+    
+    try {
+      // Update the profile in Supabase
+      if (user.id) {
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            username: userData.username,
+            university: userData.university,
+            major: userData.major,
+            year: userData.year,
+            bio: userData.bio,
+            avatar_url: userData.avatar
+          })
+          .eq('id', user.id);
+          
+        if (error) {
+          console.error("Error updating profile:", error);
+          return;
+        }
+      }
+      
+      // Update local state
       const updatedUser = { ...user, ...userData };
       setUser(updatedUser);
+      
+      // Also update local storage for compatibility
       localStorage.setItem('uprit_user', JSON.stringify(updatedUser));
+      
+    } catch (error) {
+      console.error("Error updating user:", error);
     }
   };
 
@@ -127,6 +265,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     <AuthContext.Provider 
       value={{ 
         user, 
+        session,
         isLoading, 
         isAuthenticated: !!user, 
         login, 

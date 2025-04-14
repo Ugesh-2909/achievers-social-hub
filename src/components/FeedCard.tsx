@@ -3,21 +3,89 @@ import { FeedItem, getUserById, achievements } from "@/data/mockData";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, Share2, Award, Users, Trophy } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { supabase } from '@/integrations/supabase/client';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Link } from "react-router-dom";
 
 interface FeedCardProps {
   feedItem: FeedItem;
 }
 
+type ProfileData = {
+  username: string;
+  avatar_url: string;
+};
+
 const FeedCard = ({ feedItem }: FeedCardProps) => {
-  const user = getUserById(feedItem.userId);
+  const [userData, setUserData] = useState<ProfileData | null>(null);
+  const [achievementData, setAchievementData] = useState<any | null>(null);
+  const mockUser = getUserById(feedItem.userId);
+  
+  useEffect(() => {
+    // Fetch real user data from Supabase
+    const fetchUserProfile = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('username, avatar_url')
+          .eq('id', feedItem.userId)
+          .single();
+          
+        if (error) {
+          console.error("Error fetching user profile:", error);
+          return;
+        }
+        
+        if (data) {
+          setUserData(data);
+        }
+      } catch (error) {
+        console.error("Error in fetchUserProfile:", error);
+      }
+    };
+    
+    // Fetch real achievement data if this feed item is related to an achievement
+    const fetchAchievementData = async () => {
+      if (!feedItem.achievementId) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('achievements')
+          .select('*')
+          .eq('id', feedItem.achievementId)
+          .single();
+          
+        if (error) {
+          console.error("Error fetching achievement:", error);
+          return;
+        }
+        
+        if (data) {
+          setAchievementData(data);
+        }
+      } catch (error) {
+        console.error("Error in fetchAchievementData:", error);
+      }
+    };
+    
+    fetchUserProfile();
+    if (feedItem.achievementId) {
+      fetchAchievementData();
+    }
+  }, [feedItem.userId, feedItem.achievementId]);
   
   const achievement = useMemo(() => {
+    if (achievementData) {
+      return achievementData;
+    }
+    
     if (feedItem.achievementId) {
       return achievements.find(a => a.id === feedItem.achievementId);
     }
+    
     return null;
-  }, [feedItem.achievementId]);
+  }, [feedItem.achievementId, achievementData]);
   
   // Format date to show how long ago the post was created
   const formatTimeAgo = (dateString: string) => {
@@ -46,19 +114,29 @@ const FeedCard = ({ feedItem }: FeedCardProps) => {
     }
   };
 
+  // Use real user data if available, fallback to mock data
+  const user = userData ? {
+    name: userData.username,
+    avatar: userData.avatar_url,
+    username: userData.username
+  } : mockUser;
+
+  if (!user) return null;
+
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow duration-200">
       <CardContent className="p-4">
         <div className="flex items-start space-x-3">
-          <img 
-            src={user?.avatar} 
-            alt={user?.name}
-            className="w-10 h-10 rounded-full object-cover"
-          />
+          <Link to={`/profile/${user.username}`} className="flex-shrink-0">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarFallback>{user.name?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
+            </Avatar>
+          </Link>
           <div className="flex-1">
             <div className="flex items-center space-x-2">
-              <span className="font-semibold">{user?.name}</span>
-              <span className="text-xs text-muted-foreground">@{user?.username}</span>
+              <Link to={`/profile/${user.username}`} className="font-semibold hover:underline">{user.name}</Link>
+              <span className="text-xs text-muted-foreground">@{user.username}</span>
               <span className="text-xs text-muted-foreground">•</span>
               <span className="text-xs text-muted-foreground">{formatTimeAgo(feedItem.date)}</span>
             </div>
