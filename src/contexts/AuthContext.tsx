@@ -1,7 +1,8 @@
 
 import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 
-interface User {
+// Export the User interface so it can be imported by other components
+export interface User {
   id: string;
   name: string;
   email: string;

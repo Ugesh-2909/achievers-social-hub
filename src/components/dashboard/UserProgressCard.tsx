@@ -1,4 +1,3 @@
-
 import { User } from '@/contexts/AuthContext';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -8,20 +7,12 @@ interface UserProgressCardProps {
   user: User;
 }
 
-interface ExtendedUser extends User {
-  level?: number;
-  xp?: number;
-  streak?: number;
-}
-
 const UserProgressCard = ({ user }: UserProgressCardProps) => {
-  // Default values if properties don't exist
-  const extendedUser = user as ExtendedUser;
-  const level = extendedUser.level || 1;
-  const xp = extendedUser.xp || 0;
+  const level = user.level || 1;
+  const xp = user.xp || 0;
   const nextLevelXp = level * 1000;
   const xpProgress = Math.min((xp / nextLevelXp) * 100, 100);
-  const streak = extendedUser.streak || 0;
+  const streak = user.streak || 0;
 
   return (
     <Card className="overflow-hidden border-brand-purple/20">
