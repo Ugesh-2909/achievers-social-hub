@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -33,7 +32,7 @@ const FeedTabs = ({ feedItems: initialFeedItems }: FeedTabsProps) => {
         }
         
         if (data) {
-          // Convert Supabase achievements to FeedItems
+          // Convert Supabase achievements to FeedItems with proper typing
           const newFeedItems: FeedItem[] = data.map(item => ({
             id: item.id,
             userId: item.user_id,
@@ -43,7 +42,7 @@ const FeedTabs = ({ feedItems: initialFeedItems }: FeedTabsProps) => {
             date: item.created_at,
             likes: item.likes || 0,
             comments: item.comments || 0,
-            timestamp: new Date(item.created_at).getTime() // Add the missing timestamp property
+            timestamp: new Date(item.created_at).getTime().toString() // Convert to string
           }));
           
           // Combine with initial feed items, but prioritize real database items
@@ -75,7 +74,7 @@ const FeedTabs = ({ feedItems: initialFeedItems }: FeedTabsProps) => {
       }, (payload) => {
         const newAchievement = payload.new;
         
-        // Add the new achievement to the feed
+        // Add the new achievement to the feed with proper typing
         setFeedItems(prev => [{
           id: newAchievement.id,
           userId: newAchievement.user_id,
@@ -85,7 +84,7 @@ const FeedTabs = ({ feedItems: initialFeedItems }: FeedTabsProps) => {
           date: newAchievement.created_at,
           likes: newAchievement.likes || 0,
           comments: newAchievement.comments || 0,
-          timestamp: new Date(newAchievement.created_at).getTime() // Add the missing timestamp property
+          timestamp: new Date(newAchievement.created_at).getTime().toString() // Convert to string
         }, ...prev]);
       })
       .subscribe();

@@ -39,7 +39,7 @@ export interface FeedItem {
   likes: number;
   comments: number;
   achievementId?: string;
-  timestamp: string;
+  timestamp: string | number;
 }
 
 export interface LeaderboardItem {

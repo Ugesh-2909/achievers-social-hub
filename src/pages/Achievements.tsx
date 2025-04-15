@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { achievement } from '@/data/mockData';
+import { achievements } from '@/data/mockData';
 import AchievementsList from '@/components/achievements/AchievementsList';
 import AchievementsFilters from '@/components/achievements/AchievementsFilters';
 import AchievementsHeader from '@/components/achievements/AchievementsHeader';
@@ -56,7 +56,7 @@ const AchievementsPage = () => {
             date: item.created_at,
             likes: item.likes || 0,
             comments: item.comments || 0,
-            badge: item.badge || null,
+            badge: null, // Set badge to null as it's not in the database schema
           }));
           
           setAchievements(formattedAchievements);
