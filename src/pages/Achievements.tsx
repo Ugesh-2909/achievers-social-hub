@@ -1,61 +1,104 @@
 
-import React, { useState } from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import AchievementsHeader from '@/components/achievements/AchievementsHeader';
-import AchievementsFilters from '@/components/achievements/AchievementsFilters';
+import { useState, useEffect } from 'react';
+import { achievement } from '@/data/mockData';
 import AchievementsList from '@/components/achievements/AchievementsList';
-import AchievementsGrid from '@/components/achievements/AchievementsGrid';
-import { achievements } from '@/data/mockData';
-import { Achievement } from '@/data/mockData';
+import AchievementsFilters from '@/components/achievements/AchievementsFilters';
+import AchievementsHeader from '@/components/achievements/AchievementsHeader';
+import { supabase } from '@/integrations/supabase/client';
 
-type ViewMode = 'grid' | 'list';
-type CategoryFilter = 'all' | 'academic' | 'extracurricular' | 'professional' | 'volunteer' | 'award';
+export interface AchievementSearchParams {
+  category?: string;
+  sort?: string;
+  period?: string;
+  search?: string;
+}
 
 const AchievementsPage = () => {
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
+  const [achievements, setAchievements] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [searchParams, setSearchParams] = useState<AchievementSearchParams>({});
 
-  // Filter achievements based on search query and category
-  const filteredAchievements = achievements.filter((achievement) => {
-    // Apply search filter
-    const matchesSearch = 
-      achievement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      achievement.description.toLowerCase().includes(searchQuery.toLowerCase());
+  useEffect(() => {
+    const fetchAchievements = async () => {
+      setLoading(true);
+      
+      try {
+        let query = supabase
+          .from('achievements')
+          .select('*, profiles:user_id(username, avatar_url)')
+          .order('created_at', { ascending: false });
+          
+        if (searchParams.category) {
+          query = query.eq('category', searchParams.category);
+        }
+        
+        if (searchParams.search) {
+          query = query.or(`title.ilike.%${searchParams.search}%,description.ilike.%${searchParams.search}%`);
+        }
+        
+        const { data, error } = await query;
+        
+        if (error) {
+          console.error("Error fetching achievements:", error);
+          return;
+        }
+        
+        if (data) {
+          // Convert to format expected by AchievementsList component
+          const formattedAchievements = data.map(item => ({
+            id: item.id,
+            userId: item.user_id,
+            title: item.title,
+            description: item.description,
+            category: item.category,
+            image: item.image,
+            points: item.points,
+            date: item.created_at,
+            likes: item.likes || 0,
+            comments: item.comments || 0,
+            badge: item.badge || null,
+          }));
+          
+          setAchievements(formattedAchievements);
+        }
+      } catch (error) {
+        console.error("Error in fetchAchievements:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     
-    // Apply category filter
-    const matchesCategory = categoryFilter === 'all' || achievement.category === categoryFilter;
-    
-    return matchesSearch && matchesCategory;
-  });
+    fetchAchievements();
+  }, [searchParams]);
+
+  const handleFilter = (params: AchievementSearchParams) => {
+    setSearchParams(params);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+    <div className="container py-8 max-w-screen-xl mx-auto">
+      <AchievementsHeader />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <AchievementsHeader />
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
+        <div className="lg:col-span-1">
+          <AchievementsFilters onFilter={handleFilter} />
+        </div>
         
-        <AchievementsFilters 
-          viewMode={viewMode}
-          setViewMode={setViewMode}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          categoryFilter={categoryFilter}
-          setCategoryFilter={setCategoryFilter}
-        />
-        
-        <div className="mt-6">
-          {viewMode === 'grid' ? (
-            <AchievementsGrid achievements={filteredAchievements} />
+        <div className="lg:col-span-3">
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Loading achievements...</p>
+            </div>
+          ) : achievements.length > 0 ? (
+            <AchievementsList achievements={achievements} />
           ) : (
-            <AchievementsList achievements={filteredAchievements} />
+            <div className="text-center py-12 border rounded-lg">
+              <h3 className="text-lg font-medium text-muted-foreground">No achievements found</h3>
+              <p className="mt-2 text-sm text-muted-foreground">Try adjusting your filters or search criteria.</p>
+            </div>
           )}
         </div>
-      </main>
-
-      <Footer />
+      </div>
     </div>
   );
 };

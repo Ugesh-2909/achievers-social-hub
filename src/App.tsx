@@ -28,7 +28,7 @@ function App() {
             <Routes>
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
-              <Route path="/achievements" element={<RequireAuth><AchievementCard /></RequireAuth>} />
+              <Route path="/achievements" element={<RequireAuth><AchievementsPage /></RequireAuth>} />
               <Route path="/leaderboard" element={<RequireAuth><LeaderboardPage /></RequireAuth>} />
               <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
               <Route path="/profile/:username" element={<RequireAuth><ProfilePage /></RequireAuth>} />

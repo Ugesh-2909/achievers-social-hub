@@ -42,7 +42,8 @@ const FeedTabs = ({ feedItems: initialFeedItems }: FeedTabsProps) => {
             content: `Just earned the "${item.title}" achievement!`,
             date: item.created_at,
             likes: item.likes || 0,
-            comments: item.comments || 0
+            comments: item.comments || 0,
+            timestamp: new Date(item.created_at).getTime() // Add the missing timestamp property
           }));
           
           // Combine with initial feed items, but prioritize real database items
@@ -83,7 +84,8 @@ const FeedTabs = ({ feedItems: initialFeedItems }: FeedTabsProps) => {
           content: `Just earned the "${newAchievement.title}" achievement!`,
           date: newAchievement.created_at,
           likes: newAchievement.likes || 0,
-          comments: newAchievement.comments || 0
+          comments: newAchievement.comments || 0,
+          timestamp: new Date(newAchievement.created_at).getTime() // Add the missing timestamp property
         }, ...prev]);
       })
       .subscribe();
